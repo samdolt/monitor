@@ -32,7 +32,7 @@ pages:
 build:specs:
   script:
     - asciidoctor-pdf --version
-    - cd specs && asciidoctor-pdf -v readme.adoc && cd ..
+    - cd specs && asciidoctor-pdf -v index.adoc && cd ..
   artifacts:
           paths:
                   - specs/readme.pdf

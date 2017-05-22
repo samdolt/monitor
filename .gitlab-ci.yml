@@ -22,7 +22,7 @@ before_script:
 pages:
     script:
         - asciidoctor --version
-        - cd specs && mkdir static && asciidoctor -v index.adoc --desination-dir=static -a data-uri && cd ..
+        - cd specs && mkdir static && asciidoctor -v index.adoc --destination-dir=static -a data-uri && cd ..
     artifacts:
         paths:
             - specs/static

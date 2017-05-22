@@ -1,0 +1,11 @@
+[package]
+authors = ["Samuel Dolt <samuel@dolt.ch>"]
+name = "ttn2redis"
+version = "0.1.0"
+[dependencies]
+bincode = "*"
+redis = "*"
+rmp-serde = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"

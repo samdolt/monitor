@@ -1,0 +1,11 @@
+[package]
+authors = ["Samuel Dolt <samuel@dolt.ch>"]
+name = "monitor"
+version = "1.0.0"
+
+[dependencies]
+ttn2redis = {path="ttn2redis"}
+libglue = {path="libglue"}
+
+[workspace]
+

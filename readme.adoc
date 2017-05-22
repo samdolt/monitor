@@ -1,0 +1,16 @@
+:author: Dolt.ch
+:doctype: book
+:toc: left
+:ascii-ids:
+:source-highlighter: pygments
+
+= IOT Meta Projects -- Specifications
+
+== Glue
+
+include::glue/incomming_message_queue.adoc[]
+
+== ttn2redis
+
+== redis2influx
+

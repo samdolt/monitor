@@ -1,29 +1,15 @@
-# Unofficial language image. Look for the different tagged releases at:
-# https://hub.docker.com/r/scorpil/rust/tags/
 image: "registry.dolt.ch/iot/monitor/image:latest"
+# Image with rust, gcc, asciidoctor, asciidoctor-pdf
 
-# Optional: Pick zero or more services to be used on all builds.
-# Only needed when using a docker container to run your tests in.
-# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-service
-services:
-  - redis:latest
-  - postgres:latest
-
-# Optional: Install a C compiler, cmake and git into the container.
-# You will often need this when you (or any of your dependencies) depends on C code.
-before_script:
-- apt-get update -yqq
-- apt-get install -yqq --no-install-recommends build-essential
-- apt-get install -yqq rubygems python-pygments
-- gem install asciidoctor
-- gem install asciidoctor-pdf --pre
-- gem install pygments.rb
+#services:
+#  - redis:latest
+#  - postgres:latest
 
 pages:
     script:
         - asciidoctor --version
         - mkdir public
-        - cd specs && asciidoctor -v index.adoc-a data-uri && cd ..
+        - cd specs && asciidoctor -v index.adoc -a data-uri && cd ..
         - cp specs/index.html public/
     artifacts:
         paths:

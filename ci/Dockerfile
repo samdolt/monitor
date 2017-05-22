@@ -23,7 +23,14 @@ RUN apt-get update && \
     /var/lib/apt/lists/* \
     /tmp/* \
     /var/tmp/* && \
-  mkdir /source
+  mkdir /source && \
+  DEBIAN_FRONTEND=noninteractive apt-get update -yqq && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -yqq --no-install-recommends build-essential && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -yqq rubygems python-pygments && \
+  gem install asciidoctor && \
+  gem install asciidoctor-pdf --pre && \
+  gem install pygments.rb
+
 VOLUME ["/source"]
 WORKDIR /source
 CMD ["/bin/bash"]

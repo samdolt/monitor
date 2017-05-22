@@ -20,13 +20,12 @@ before_script:
 - gem install pygments.rb
 
 pages:
-  script:
-    - asciidoctor --version
-    - cd specs && mkdir static && asciidoctor -v index.adoc --desination-dir=static -a data-uri && cd ..
-   artifacts:
-    paths:
-      - specs/static
-
+    script:
+        - asciidoctor --version
+        - cd specs && mkdir static && asciidoctor -v index.adoc --desination-dir=static -a data-uri && cd ..
+    artifacts:
+        paths:
+            - specs/static
 
 build:specs:
   script:

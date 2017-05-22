@@ -16,14 +16,17 @@ before_script:
 - apt-get install -yqq --no-install-recommends build-essential
 - apt-get install -yqq rubygems python-pygments
 - gem install asciidoctor
-- gem install asciidoctor-pdf
+- gem install asciidoctor-pdf --pre
 - gem install pygments.rb
 
-test:specs:
+build:specs:
   script:
     - asciidoctor --version && asciidoctor-pdf --version
     - cd specs && asciidoctor -v readme.adoc && cd ..
     - cd specs && asciidoctor-pdf -v readme.adoc && cd ..
+  artifacts:
+          paths:
+                  - specs/readme.pdf
 
 # Use cargo to test the project
 test:cargo:

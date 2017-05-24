@@ -3,9 +3,9 @@ authors = ["Samuel Dolt <samuel@dolt.ch>"]
 name = "ttn2redis"
 version = "0.1.0"
 [dependencies]
-bincode = "*"
 redis = "*"
-rmp-serde = "*"
 serde = "*"
 serde_derive = "*"
 serde_json = "*"
+mqttc = { git = "https://github.com/inre/rust-mq.git" }
+netopt = { git = "https://github.com/inre/rust-mq.git" }

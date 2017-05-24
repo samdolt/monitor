@@ -1,6 +1,7 @@
-extern crate libglue;
-
+extern crate monitor;
 
 fn main() {
-    println!("Hello, world!");
+
+
+	println!("Hello");
 }

@@ -9,3 +9,4 @@ influent = "0.4"
 serde_json = "1.0.2"
 serde = "1"
 base64 = "0.5.2"
+influxdb = { git = "https://projects.dolt.ch/open-source/influxdb-rs.git"}

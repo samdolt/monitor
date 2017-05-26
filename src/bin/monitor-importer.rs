@@ -3,6 +3,7 @@ extern crate monitor;
 extern crate serde_json as json;
 extern crate serde;
 extern crate base64;
+extern crate influxdb;
 
 use monitor::glue::lora::Message;
 
@@ -38,8 +39,8 @@ fn run() -> redis::RedisResult<()> {
         match port {
             0 => panic!("Invalid port 0"),
             3 => waspmote_parse(&message),
-            _ => println!("New message: {},  {}", port, message),
             224...255 => panic!("Invalid port >223"),
+            _ => println!("New message: {},  {}", port, message),
         }
 
     }
@@ -47,21 +48,19 @@ fn run() -> redis::RedisResult<()> {
 }
 
 use std::process::Command;
+use influxdb::Connection;
 
 fn waspmote_parse(message: &json::Value) {
     use monitor::waspmote::decode;
 
     println!("New waspmote message with:");
 
-    let measurements = decode(&base64::decode(message["payload"].as_str().unwrap()).unwrap());
-
-    let device = message["device"].as_str().unwrap();
-
-    for measurement in measurements {
-        influx_add(&measurement.name, device, measurement.value);
-    }
+    let lines = decode(&base64::decode(message["payload"].as_str().unwrap()).unwrap(),
+                       message["device"].as_str().unwrap());
 
 
+    let con = Connection::connect("http://localhost/monitor").unwrap();
+    con.write(&lines).unwrap();
 
 }
 

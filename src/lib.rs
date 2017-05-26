@@ -1,3 +1,4 @@
+extern crate influxdb;
 
 pub mod glue {
     pub mod lora {

@@ -2,28 +2,24 @@ use std::f64;
 use std::str;
 use std::str::FromStr;
 
-#[derive(Debug)]
-pub struct Measurement
-{
-    pub name: String,
-    pub value: f64,
-}
+use influxdb::LinesBuilder;
+use influxdb::Lines;
 
 trait AddMeasurement {
-    fn add(&mut self, name: &str, value: &str);
+    fn add(mut self, name: &str, value: &str, device: &str) -> Lines;
 }
 
-impl AddMeasurement for Vec<Measurement> {
-    fn add(&mut self, name: &str, value: &str){
+impl AddMeasurement for Lines {
+    fn add(mut self, name: &str, value: &str, device: &str) -> Lines{
         let data = f64::from_str(value).unwrap();
-        let mut data_struct = Measurement {name: name.to_string(),  value: data};
-        self.push(data_struct);
+
+        self.add_line(name).add_tag("device", device).add_field("value", data).build()
     }
 }
 
-pub fn decode(data: &[u8] ) -> Vec<Measurement>
+pub fn decode(data: &[u8] , device: &str) -> Lines
 {
-    let mut measurements: Vec<Measurement> =  Vec::new();
+    let mut lines = Lines::new();
 
     let data = String::from_utf8_lossy(&data);
 
@@ -41,20 +37,20 @@ pub fn decode(data: &[u8] ) -> Vec<Measurement>
 
         println!("item: {}, part1: {}, part2: {}", item, datasplit[0], datasplit[1]);
 
-        match datasplit[0] {
-            "BAT"       => measurements.add("battery", datasplit[1]),
-            "PRES"      => measurements.add("pressure", datasplit[1]),
-            "NO2"       => measurements.add("no2", datasplit[1]),
-            "O3"        => measurements.add("o3", datasplit[1]),
-            "PM1"       => measurements.add("particle_1um", datasplit[1]),
-            "PM2_5"     => measurements.add("particle_2.5um", datasplit[1]),
-            "PM10"      => measurements.add("particle_10um", datasplit[1]),
-            "LUX"       => measurements.add("lux", datasplit[1]),
-            "HUM"       => measurements.add("humidity", datasplit[1]),
-            _ => (),
+        lines = match datasplit[0] {
+            "BAT"       => lines.add("battery", datasplit[1], device),
+            "PRES"      => lines.add("pressure", datasplit[1], device),
+            "NO2"       => lines.add("no2", datasplit[1], device),
+            "O3"        => lines.add("o3", datasplit[1], device),
+            "PM1"       => lines.add("particle_1um", datasplit[1], device),
+            "PM2_5"     => lines.add("particle_2.5um", datasplit[1], device),
+            "PM10"      => lines.add("particle_10um", datasplit[1], device),
+            "LUX"       => lines.add("lux", datasplit[1], device),
+            "HUM"       => lines.add("humidity", datasplit[1], device),
+            _ => lines,
         }
     }
-    measurements
+    lines
 }
 
 #[cfg(test)]

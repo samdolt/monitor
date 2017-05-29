@@ -1,16 +1,18 @@
 extern crate influxdb;
+#[macro_use] extern crate diesel;
+#[macro_use] extern crate diesel_codegen;
 
-pub mod glue {
-    pub mod lora {
+extern crate dotenv;
+extern crate subcmd;
 
-        pub struct Message {
+use diesel::prelude::*;
+use diesel::pg::PgConnection;
+use dotenv::dotenv;
+use std::env;
 
-        }
-
-    }
-}
-
+pub mod db;
 pub mod waspmote;
+pub mod commands;
 
 
 
@@ -18,6 +20,5 @@ pub mod waspmote;
 #[cfg(test)]
 mod tests {
     #[test]
-    fn it_works() {
-    }
+    fn it_works() {}
 }

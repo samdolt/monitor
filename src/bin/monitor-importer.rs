@@ -5,25 +5,45 @@ extern crate serde;
 extern crate base64;
 extern crate influxdb;
 
-use monitor::glue::lora::Message;
+#[macro_use]
+extern crate slog;
+extern crate slog_term;
+extern crate slog_async;
+
+use slog::Drain;
+use slog::Logger;
 
 use redis::Commands;
 
-use serde::Deserialize;
-use serde::Serialize;
+
 
 
 static PORTS: &'static [&str] = &["lora:rx:1", "lora:rx:2", "lora:rx:3"];
 
 
 fn main() {
-    run().expect("Something wrong");
+    let decorator = slog_term::TermDecorator::new().build();
+    let drain = slog_term::CompactFormat::new(decorator).build().fuse();
+    let drain = slog_async::Async::new(drain).build().fuse();
+
+    let _log = slog::Logger::root(
+        drain,
+        o!("binary" => "monitor-importer", "version" => env!("CARGO_PKG_VERSION"))
+    );
+
+    info!(_log, "Starting program");
+    run(&_log).expect("Something wrong");
 }
 
 
-fn run() -> redis::RedisResult<()> {
+fn run(logger: &Logger) -> redis::RedisResult<()> {
     let redis_client = redis::Client::open("redis://127.0.0.1")?;
     let redis = redis_client.get_connection()?;
+    let redis_log = logger.new(o!("redis-version" => "unknow"));
+    info!(redis_log, "Connected to Redis");
+
+    //let influx = influxdb::Connection::connect("http://127.0.0.1/monitor").unwrap();
+    info!(logger, "Connected to Influx");
 
 
 
@@ -33,7 +53,9 @@ fn run() -> redis::RedisResult<()> {
         let (key, message_str): (String, String) = redis.brpop(PORTS, 0)?;
 
         // key can be between "lora:rx:1" and "lora:rx:223"
-        let port: u8 = (&key[8..]).parse().expect("Redis key doesn't respect lora:rx:$FPort format");
+        let port: u8 = (&key[8..])
+            .parse()
+            .expect("Redis key doesn't respect lora:rx:$FPort format");
         let message: json::Value = json::from_str(&message_str).expect("Wrong json");
 
         match port {
@@ -47,7 +69,6 @@ fn run() -> redis::RedisResult<()> {
 
 }
 
-use std::process::Command;
 use influxdb::Connection;
 
 fn waspmote_parse(message: &json::Value) {
@@ -61,20 +82,5 @@ fn waspmote_parse(message: &json::Value) {
 
     let con = Connection::connect("http://localhost/monitor").unwrap();
     con.write(&lines).unwrap();
-
-}
-
-fn influx_add(topic: &str, device: &str, value: f64 ) {
-
-    println!("   {}={} from {}", topic, value, device);
-
-    Command::new("curl")
-        .arg("-i")
-        .arg("-XPOST")
-        .arg("http://localhost:8086/write?db=monitor")
-        .arg("--data-binary")
-        .arg(format!("{},device={} value={}", topic, device, value))
-        .spawn()
-        .expect("failed to execute process");
 
 }

@@ -4,6 +4,7 @@ extern crate influxdb;
 
 extern crate dotenv;
 extern crate subcmd;
+extern crate djangohashers;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;

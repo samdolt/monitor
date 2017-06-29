@@ -4,13 +4,32 @@
 :ascii-ids:
 :source-highlighter: pygments
 
-= IOT Meta Projects -- Specifications
+= Monitor -- Documentation
 
-== Glue
+Monitor is the lowest level layer powering Sensing.ch. It's a daemon who listen to
+incomming packet from all supported Lorawan Provider.
+
+For each packet received, Monitor parse it and then make decision about what to do
+with each value:
+
+* Launch an alert
+* Add them to our time serie database
+* Add them to our SQL database
+
+== Parts
+
+Monitor is split of in multiple process:
+
+=== monitor-backend-ttn -- Backend specific
+
+This part import data from TheThingsNetwork.org
+
+=== monitor-importer -- Main Logic
+
+This part collect all data received from all network and do all the detection, alarming logic
+
+=== libmonitor -- Our glue code
 
 include::glue/incomming_message_queue.adoc[]
 
-== ttn2redis
-
-== redis2influx
 

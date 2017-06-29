@@ -42,10 +42,8 @@ fn run(logger: &Logger) -> redis::RedisResult<()> {
     let redis_log = logger.new(o!("redis-version" => "unknow"));
     info!(redis_log, "Connected to Redis");
 
+    let influx = influxdb::Connection::connect(("http://127.0.0.1/monitor",logger.new(o!()))).unwrap();
     //let influx = influxdb::Connection::connect("http://127.0.0.1/monitor").unwrap();
-    info!(logger, "Connected to Influx");
-
-
 
     loop {
         //let keys: Vec<&str> = vec!("lora:rx:1", "lora:rx:2");
@@ -60,7 +58,8 @@ fn run(logger: &Logger) -> redis::RedisResult<()> {
 
         match port {
             0 => panic!("Invalid port 0"),
-            3 => waspmote_parse(&message),
+            3 => waspmote_parse(&message, &influx),
+            1 => waspmote_parse(&message, &influx),
             224...255 => panic!("Invalid port >223"),
             _ => println!("New message: {},  {}", port, message),
         }
@@ -71,7 +70,7 @@ fn run(logger: &Logger) -> redis::RedisResult<()> {
 
 use influxdb::Connection;
 
-fn waspmote_parse(message: &json::Value) {
+fn waspmote_parse(message: &json::Value, conn: &influxdb::Connection) {
     use monitor::waspmote::decode;
 
     println!("New waspmote message with:");
@@ -80,7 +79,6 @@ fn waspmote_parse(message: &json::Value) {
                        message["device"].as_str().unwrap());
 
 
-    let con = Connection::connect("http://localhost/monitor").unwrap();
-    con.write(&lines).unwrap();
+    conn.write(&lines).unwrap();
 
 }
